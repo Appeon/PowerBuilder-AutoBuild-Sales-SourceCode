@@ -1,0 +1,34 @@
+﻿$PBExportHeader$f_restore_data.srf
+global type f_restore_data from function_object
+end type
+
+forward prototypes
+global subroutine f_restore_data (datawindow adw, long al_row)
+end prototypes
+
+global subroutine f_restore_data (datawindow adw, long al_row);Long i
+String ls_colname
+
+For i = 1 to Integer(adw.Describe("DataWindow.Column.Count"))
+	ls_colname = adw.Describe("#" + String(i) + ".Name")
+	IF adw.GetItemStatus(al_row, ls_colname, Primary!) = DataModified! Then
+		Choose Case Lower( Left (adw.Describe("#" + String(i) + ".ColType" ) , 5 ) )
+			CASE "char(", "char"		
+				adw.SetItem(al_row, ls_colname, adw.GetItemString ( al_row, ls_colname, Primary!, True ) )
+			CASE "date"	
+				adw.SetItem(al_row, ls_colname, adw.GetItemDate ( al_row, ls_colname, Primary!, True ) )
+			CASE "datet"	
+				adw.SetItem(al_row, ls_colname, adw.GetItemDateTime ( al_row, ls_colname, Primary!, True ) )
+			CASE "decim"	
+				adw.SetItem(al_row, ls_colname, adw.GetItemDecimal ( al_row, ls_colname, Primary!, True ) )
+			CASE "numbe", "long", "ulong", "real", "int"		
+				adw.SetItem(al_row, ls_colname, adw.GetItemNumber ( al_row, ls_colname, Primary!, True ) )
+			CASE "time", "times"	
+				adw.SetItem(al_row, ls_colname, adw.GetItemTime ( al_row, ls_colname, Primary!, True ) )
+		End Choose
+	End IF
+Next
+
+
+end subroutine
+

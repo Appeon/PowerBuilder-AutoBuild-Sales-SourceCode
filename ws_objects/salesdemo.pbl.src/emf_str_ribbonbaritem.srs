@@ -1,0 +1,6 @@
+﻿$PBExportHeader$emf_str_ribbonbaritem.srs
+global type emf_str_ribbonbaritem from structure
+	string		s_tag
+	integer		i_type		descriptor "comment" = "ribbonbar object type"
+end type
+
