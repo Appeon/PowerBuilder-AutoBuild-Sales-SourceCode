@@ -117,7 +117,7 @@ fontfamily fontfamily = swiss!
 string facename = "Tahoma"
 long textcolor = 33554432
 long backcolor = 67108864
-string text = "Version: 2019R3"
+string text = "Version: 2022R2"
 boolean focusrectangle = false
 end type
 
