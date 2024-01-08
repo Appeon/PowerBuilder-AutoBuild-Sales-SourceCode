@@ -36,7 +36,7 @@ long richtexteditx64type = 5
 long richtexteditversion = 3
 string richtexteditkey = ""
 string appicon = ".\image\CRM.ico"
-string appruntimeversion = "22.1.0.2819"
+string appruntimeversion = "22.2.0.3289"
 boolean manualsession = false
 boolean unsupportedapierror = false
 boolean ultrafast = false
@@ -72,10 +72,10 @@ IF ls_theme <> "Do Not Use Themes" THEN
 	applytheme(GetCurrentDirectory( ) + "\Theme\" + ls_theme)
 END IF
 
-// Profile PB Demo DB V2019R3
+// Profile PB Demo DB V2022R3
 SQLCA.DBMS = "ODBC"
 SQLCA.AutoCommit = False
-SQLCA.DBParm = "ConnectString='DSN=PB Demo DB V2022R2;UID=dba;PWD=sql'"
+SQLCA.DBParm = "ConnectString='DSN=PB Demo DB V2022R3;UID=dba;PWD=sql'"
 
 
 Connect Using SQLCA;
