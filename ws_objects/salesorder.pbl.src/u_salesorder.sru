@@ -6,6 +6,8 @@ type dw_filter from u_dw within tabpage_1
 end type
 type cb_filter from u_button within tabpage_1
 end type
+type cb_1 from commandbutton within tabpage_1
+end type
 type st_1 from statictext within tabpage_2
 end type
 type cb_add from u_button within u_salesorder
@@ -59,7 +61,6 @@ IF ldwc_child.RowCount() > 0 Then
 	IF tab_1.tabpage_1.dw_browser.RowCount() > 0 Then
 		tab_1.tabpage_1.dw_browser.ScrollToRow(1)
 	End IF
-	ib_modify = False
 	Return 1
 Else
 	ldwc_child.SetTransObject(Sqlca)
@@ -162,10 +163,7 @@ Long i
 
 iuo_currentdw.AcceptText()
 
-If Not ib_modify Then Return
-
-ib_modify = False
-w_main.ib_modify = False
+if f_checkmodify(tab_1.tabpage_1.dw_browser) = false and f_checkmodify(tab_1.tabpage_2.dw_detail) = false and f_checkmodify(tab_1.tabpage_2.dw_master) = false then return
 
 dw_cur = tab_1.tabpage_2.dw_master
 dw_cur.AcceptText()
@@ -230,16 +228,10 @@ tab_1.tabpage_2.dw_detail.AcceptText()
 Choose Case iuo_currentdw.ClassName()
 	Case "dw_browser", "dw_master"
 		
-		IF ib_Modify = True Then
+		if f_checkmodify(tab_1.tabpage_1.dw_browser) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true or f_checkmodify(tab_1.tabpage_2.dw_master) = true then 
 			MessageBox(gs_msg_title, "Please save the data first.")
 			tab_1.SelectedTab = 2
 			Return 1
-		End IF
-
-		li_modifiedrow = tab_1.tabpage_2.dw_master.ModifiedCount() + tab_1.tabpage_2.dw_detail.ModifiedCount()
-		IF li_modifiedrow > 0 Then
-			MessageBox(gs_msg_title, "Please save the data first.");
-			Return -1
 		End IF
 
 		iuo_currentdw = tab_1.tabpage_2.dw_master
@@ -284,9 +276,6 @@ Choose Case iuo_currentdw.ClassName()
 		
 End Choose
 
-ib_Modify = True
-w_main.ib_modify = True
-
 Return 1
 
 		
@@ -318,7 +307,6 @@ Choose Case iuo_currentdw.ClassName()
 		
 		IF li_ret = 1 Then
 			IF ldws_status = New! Or ldws_status = NewModified! Then
-				ib_Modify = False
 				iuo_currentdw.DeleteRow(li_row)
 				IF tab_1.tabpage_1.dw_browser.RowCount() >= 1 Then
 					tab_1.tabpage_1.dw_browser.ScrollToRow(1)
@@ -371,9 +359,6 @@ Choose Case iuo_currentdw.ClassName()
 			END IF
 		End IF		
 End Choose
-
-ib_Modify = False
-w_main.ib_modify = False
 
 Commit;
 
@@ -442,9 +427,6 @@ IF tab_1.tabpage_2.dw_detail.Modifiedcount() > 0 THEN
 	END IF
 END IF
 
-ib_modify = False
-w_main.ib_modify = False
-
 IF ldws_status = Newmodified! Then
 	li_listrow = tab_1.tabpage_1.dw_browser.rowcount() + 1 
 	tab_1.tabpage_2.dw_master.Rowscopy(li_row, li_row, primary!, tab_1.tabpage_1.dw_browser, li_listrow, primary!)
@@ -456,9 +438,6 @@ End IF
 
 Commit;
 MessageBox(gs_msg_title, "Saved the data successfully.")
-
-ib_Modify = False
-w_main.ib_modify = False
 
 tab_1.tabpage_1.dw_browser.ScrollToRow(li_listrow)
 tab_1.tabpage_1.dw_browser.SelectRow (0, False)
@@ -472,6 +451,7 @@ type tab_1 from u_tab_base`tab_1 within u_salesorder
 integer x = 0
 integer width = 4133
 integer height = 2708
+tabposition tabposition = tabsonbottom!
 end type
 
 on tab_1.create
@@ -485,33 +465,38 @@ call super::destroy
 end on
 
 type tabpage_1 from u_tab_base`tabpage_1 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4096
+integer height = 2576
 dw_filter dw_filter
 cb_filter cb_filter
+cb_1 cb_1
 end type
 
 on tabpage_1.create
 this.dw_filter=create dw_filter
 this.cb_filter=create cb_filter
+this.cb_1=create cb_1
 int iCurrent
 call super::create
 iCurrent=UpperBound(this.Control)
 this.Control[iCurrent+1]=this.dw_filter
 this.Control[iCurrent+2]=this.cb_filter
+this.Control[iCurrent+3]=this.cb_1
 end on
 
 on tabpage_1.destroy
 call super::destroy
 destroy(this.dw_filter)
 destroy(this.cb_filter)
+destroy(this.cb_1)
 end on
 
 type dw_browser from u_tab_base`dw_browser within tabpage_1
 integer x = 64
 integer y = 224
-integer width = 3845
-integer height = 2408
+integer width = 4009
+integer height = 2332
 string dataobject = "d_order_header_grid"
 boolean hscrollbar = true
 end type
@@ -535,7 +520,7 @@ DataWindowChild ldwc_creditcardid
 
 IF currentrow < 1 Then Return -1
 
-IF ib_Modify = True Then
+IF f_checkmodify(tab_1.tabpage_2.dw_detail) = true or f_checkmodify(tab_1.tabpage_2.dw_master) = true Then
 	li_ret = MessageBox("Save Change", "You have not saved your changes yet. Do you want to save the changes?" , Question!, YesNo!, 1)
 	IF li_ret = 1 Then
 		tab_1.SelectedTab = 2
@@ -548,9 +533,6 @@ IF ib_Modify = True Then
 	tab_1.tabpage_2.dw_master.ResetUpdate()
 	tab_1.tabpage_2.dw_detail.ResetUpdate()
 End IF
-
-ib_modify = False
-w_main.ib_modify = False
 
 ll_salesorderid = This.GetItemNumber(currentrow, "salesorderid")
 ll_customerid = This.GetItemNumber(currentrow, "customerid")
@@ -589,8 +571,9 @@ event dw_browser::clicked;call super::clicked;iuo_currentdw = This
 end event
 
 type tabpage_2 from u_tab_base`tabpage_2 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4096
+integer height = 2576
 st_1 st_1
 end type
 
@@ -610,7 +593,7 @@ end on
 type dw_master from u_tab_base`dw_master within tabpage_2
 integer x = 64
 integer y = 64
-integer width = 3845
+integer width = 4005
 integer height = 1516
 string dataobject = "d_order_header_free"
 end type
@@ -660,8 +643,6 @@ IF dwo.Name = "customerid" Then
 													
 End IF
 
-ib_modify = True
-w_main.ib_modify = True
 
 
 
@@ -670,8 +651,8 @@ end event
 type dw_detail from u_tab_base`dw_detail within tabpage_2
 integer x = 64
 integer y = 1756
-integer width = 3845
-integer height = 860
+integer width = 4005
+integer height = 784
 string dataobject = "d_order_detail_list"
 boolean vscrollbar = true
 end type
@@ -686,7 +667,7 @@ event dw_detail::clicked;call super::clicked;iuo_currentdw = This
 Event rowfocuschanged(row)
 end event
 
-event dw_detail::itemchanged;call super::itemchanged;//====================================================================
+event dw_detail::itemchanged;//====================================================================
 //$<Event>: itemchanged
 //$<Arguments>:
 // 	%ScriptArgs%
@@ -752,8 +733,7 @@ Choose Case dwo.Name
 		
 End Choose
 		
-ib_modify = True
-w_main.ib_modify = True
+
 
 end event
 
@@ -770,10 +750,10 @@ borderstyle borderstyle = stylebox!
 end type
 
 type cb_filter from u_button within tabpage_1
-integer x = 3538
-integer y = 72
+integer x = 3008
+integer y = 68
 integer width = 366
-integer height = 96
+integer height = 100
 integer taborder = 50
 boolean bringtotop = true
 integer textsize = -10
@@ -783,6 +763,25 @@ end type
 
 event clicked;call super::clicked;iuo_parent.Event ue_filter()
 
+end event
+
+type cb_1 from commandbutton within tabpage_1
+integer x = 3401
+integer y = 68
+integer width = 635
+integer height = 100
+integer taborder = 60
+boolean bringtotop = true
+integer textsize = -10
+integer weight = 400
+fontcharset fontcharset = ansi!
+fontpitch fontpitch = variable!
+fontfamily fontfamily = swiss!
+string facename = "Segoe UI"
+string text = "SaveDisplayedDataAs"
+end type
+
+event clicked;tab_1.tabpage_1.dw_browser.SaveDisplayedDataAs('', Excel!)
 end event
 
 type st_1 from statictext within tabpage_2
@@ -805,7 +804,7 @@ end type
 
 type cb_add from u_button within u_salesorder
 boolean visible = false
-integer x = 2665
+integer x = 2843
 integer y = 64
 integer width = 366
 integer height = 96
@@ -821,7 +820,7 @@ end event
 
 type cb_delete from u_button within u_salesorder
 boolean visible = false
-integer x = 3104
+integer x = 3282
 integer y = 64
 integer width = 366
 integer height = 96
@@ -843,25 +842,14 @@ event clicked;call super::clicked;//============================================
 //$<Modify History>:
 //====================================================================
 
-Integer li_modified
-
 Parent.Event ue_delete()
 
-li_modified =  tab_1.tabpage_2.dw_master.Modifiedcount() 
-li_modified = li_modified + tab_1.tabpage_2.dw_detail.Modifiedcount()
 
-IF li_modified  > 0 Then
-	ib_modify = True
-	w_main.ib_modify = True
-Else
-	ib_modify = False
-	w_main.ib_modify = False
-End IF
 end event
 
 type cb_save from u_button within u_salesorder
 boolean visible = false
-integer x = 3543
+integer x = 3721
 integer y = 64
 integer width = 366
 integer height = 96

@@ -90,17 +90,11 @@ end on
 event activate;IF This.windowstate <> Maximized! THEN
 	This.windowstate = Maximized!
 END IF
+parentwindow().dynamic post event ue_refresh_visible(this.title) 
+
 end event
 
-event closequery;//Int li_ret
-//IF IsValid(iuo_tab) Then
-//	IF iuo_tab.ib_modify Then
-//		li_ret = MessageBox("Save Change", "You have not saved your changes yet.  Do you want to save the changes?" , Question!, YesNo!, 1)
-//		IF li_ret = 1 Then
-//			IF This.Event ue_save() <> 1 THEN Return 0
-//		End IF
-//	End IF
-//End IF
+event closequery;parentwindow().dynamic post event ue_refresh_status()
 end event
 
 event open;//ParentWindow().Post Arrangesheets(Layer!)

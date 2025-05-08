@@ -53,7 +53,6 @@ global u_tab_base u_tab_base
 type variables
 u_dw iuo_currentdw
 u_tab_base iuo_parent
-Boolean ib_modify = False
 Long il_last_row
  
 end variables
@@ -191,10 +190,8 @@ DwItemStatus ldws_1
 
 iuo_currentdw.AcceptText()
 
-If Not ib_modify Then Return
+if f_checkmodify(tab_1.tabpage_2.dw_master) = false and f_checkmodify(tab_1.tabpage_2.dw_detail) = false  and f_checkmodify(tab_1.tabpage_1.dw_browser) then return
 
-ib_modify = False
-w_main.ib_modify = False
 
 IF iuo_currentdw.ClassName( ) = "dw_browser" THEN
 	ll_row = il_last_row
@@ -350,9 +347,8 @@ end event
 event doubleclicked;call super::doubleclicked;tab_1.SelectTab(2)
 end event
 
-event losefocus;call super::losefocus;IF Not ib_modify THEN
-	This.AcceptText( )
-END IF
+event losefocus;call super::losefocus;This.AcceptText( )
+
 end event
 
 event constructor;call super::constructor;This.SetTransObject(Sqlca)
@@ -394,9 +390,8 @@ end type
 event getfocus;call super::getfocus;iuo_currentdw = This
 end event
 
-event losefocus;call super::losefocus;IF Not ib_modify THEN
-	This.AcceptText( )
-END IF
+event losefocus;call super::losefocus;This.AcceptText( )
+
 end event
 
 event constructor;call super::constructor;This.SetTransObject(Sqlca)
@@ -413,9 +408,8 @@ end type
 event getfocus;call super::getfocus;iuo_currentdw = this
 end event
 
-event losefocus;call super::losefocus;IF Not ib_modify THEN
-	This.AcceptText( )
-END IF
+event losefocus;call super::losefocus;This.AcceptText( )
+
 end event
 
 event constructor;call super::constructor;This.SetTransObject(Sqlca)

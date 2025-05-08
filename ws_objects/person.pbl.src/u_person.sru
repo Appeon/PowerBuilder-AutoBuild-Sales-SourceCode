@@ -97,33 +97,32 @@ Long i
 
 iuo_currentdw.AcceptText()
 
-If Not ib_modify Then Return
-
-ib_modify = False
-w_main.ib_modify = False
 
 
-IF iuo_currentdw.ClassName( ) = "dw_browser" OR iuo_currentdw.ClassName( ) = "dw_persondetail" THEN
-	dw_cur = tab_1.tabpage_1.dw_persondetail
-	dw_cur.AcceptText()
-	ll_row = dw_cur.GetRow()
-	of_restore_data_current(dw_cur, ll_row)
-	dw_cur.ResetUpdate()
-END IF
 
+if f_checkmodify(tab_1.tabpage_1.dw_browser) = true or f_checkmodify(tab_1.tabpage_1.dw_persondetail) = true then
+	IF iuo_currentdw.ClassName( ) = "dw_browser" OR iuo_currentdw.ClassName( ) = "dw_persondetail" THEN
+		dw_cur = tab_1.tabpage_1.dw_persondetail
+		dw_cur.AcceptText()
+		ll_row = dw_cur.GetRow()
+		of_restore_data_current(dw_cur, ll_row)
+		dw_cur.ResetUpdate()
+	END IF
+end if
 
-IF iuo_currentdw.ClassName( ) = "dw_master" OR iuo_currentdw.ClassName( ) = "dw_detail" OR iuo_currentdw.ClassName( ) = "dw_cust" THEN
-	of_restore_data_mutil(tab_1.tabpage_2.dw_master)
+if f_checkmodify(tab_1.tabpage_2.dw_master) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true or f_checkmodify(tab_1.tabpage_2.dw_cust) = true then
+	IF iuo_currentdw.ClassName( ) = "dw_master" OR iuo_currentdw.ClassName( ) = "dw_detail" OR iuo_currentdw.ClassName( ) = "dw_cust" THEN
+		of_restore_data_mutil(tab_1.tabpage_2.dw_master)
+		
+		of_restore_data_mutil(tab_1.tabpage_2.dw_detail)
 	
-	of_restore_data_mutil(tab_1.tabpage_2.dw_detail)
-
-	dw_cur = tab_1.tabpage_2.dw_cust
-	dw_cur.AcceptText()
-	ll_row = dw_cur.GetRow()
-	of_restore_data_current(dw_cur, ll_row)
-	dw_cur.ResetUpdate()
-END IF
-
+		dw_cur = tab_1.tabpage_2.dw_cust
+		dw_cur.AcceptText()
+		ll_row = dw_cur.GetRow()
+		of_restore_data_current(dw_cur, ll_row)
+		dw_cur.ResetUpdate()
+	END IF
+end if
 
 end subroutine
 
@@ -164,7 +163,7 @@ ldt_date = DateTime(Today(), Now())
 Choose Case iuo_currentdw.ClassName()
 	Case "dw_browser", "dw_persondetail"
 		
-		IF ib_Modify = True Then
+		IF f_checkmodify(tab_1.tabpage_1.dw_browser) = true or f_checkmodify(tab_1.tabpage_1.dw_persondetail) = true or f_checkmodify(tab_1.tabpage_2.dw_cust) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true or  f_checkmodify(tab_1.tabpage_2.dw_master) = true Then
 			MessageBox(gs_msg_title, "Please save the data first.")
 			Return 1
 		End IF
@@ -200,8 +199,8 @@ Choose Case iuo_currentdw.ClassName()
 		
 End Choose
 
-ib_modify = True
-w_main.ib_modify = True
+
+
 
 Return 1
 end event
@@ -227,7 +226,6 @@ Choose case iuo_currentdw.ClassName()
 		IF li_ret = 1 Then
 			ldws_status = iuo_currentdw.GetItemStatus(li_row, 0 , Primary!)
 			IF ldws_status = New! Or ldws_status = NewModified! Then
-				ib_Modify = False
 				iuo_currentdw.DeleteRow(li_row)
 				iuo_currentdw.ReSetUpdate()
 				tab_1.tabpage_2.dw_cust.DeleteRow(tab_1.tabpage_2.dw_cust.GetRow())
@@ -308,8 +306,6 @@ IF iuo_currentdw.Update() <> 1 THEN
 	Return -1
 END IF
 
-ib_Modify = False
-w_main.ib_modify = False
 Commit;
 
 Return 1
@@ -379,8 +375,8 @@ If tab_1.tabpage_1.dw_persondetail.Modifiedcount() > 0 Then
 	END IF
 		
 	
-	ib_modify = False
-	w_main.ib_modify = False
+
+	
 		
 	IF ldws_status = Newmodified! Then
 		ll_listrow = tab_1.tabpage_1.dw_browser.rowcount()  + 1
@@ -425,8 +421,8 @@ Else
 End IF
 
 tab_1.tabpage_1.dw_browser.SetRedraw(True)
-ib_modify = False
-w_main.ib_modify = False
+
+
 MessageBox(gs_msg_title, "Saved the data successfully.")
 Commit;
 
@@ -459,6 +455,7 @@ type tab_1 from u_tab_base`tab_1 within u_person
 integer x = 0
 integer width = 4133
 integer height = 2708
+tabposition tabposition = tabsonbottom!
 end type
 
 on tab_1.create
@@ -478,15 +475,16 @@ ELSE
 END IF
 end event
 
-event tab_1::selectionchanging;call super::selectionchanging;IF ib_Modify = True Then
+event tab_1::selectionchanging;call super::selectionchanging;IF f_checkmodify(tab_1.tabpage_1.dw_persondetail) = true or f_checkmodify(tab_1.tabpage_2.dw_cust) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true or  f_checkmodify(tab_1.tabpage_2.dw_master) = true  Then
 	MessageBox(gs_msg_title, "Please save the data first.")
 	Return 1
 End IF
 end event
 
 type tabpage_1 from u_tab_base`tabpage_1 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4096
+integer height = 2576
 dw_persondetail dw_persondetail
 st_1 st_1
 sle_filter sle_filter
@@ -526,8 +524,8 @@ end on
 type dw_browser from u_tab_base`dw_browser within tabpage_1
 integer x = 64
 integer y = 244
-integer width = 3845
-integer height = 1608
+integer width = 4009
+integer height = 1560
 string dataobject = "d_person_list"
 end type
 
@@ -550,8 +548,8 @@ End IF
 
 tab_1.tabpage_1.dw_persondetail.AcceptText()
 
-IF ib_Modify = True Then
-	li_ret = MessageBox("Save Change", "You have not saved your changes yet.  Do you want to save the changes?" , Question!, YesNo!, 1)
+IF f_checkmodify(tab_1.tabpage_1.dw_persondetail) = true or f_checkmodify(tab_1.tabpage_2.dw_cust) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true or f_checkmodify(tab_1.tabpage_2.dw_master) = true Then
+	li_ret = MessageBox("Save Change", "You have not saved your changes yet. Do you want to save the changes?" , Question!, YesNo!, 1)
 	IF li_ret = 1 Then
 		Return 1
 	ELSE
@@ -568,8 +566,8 @@ ll_businessentityid = This.GetItemNumber(currentrow, "businessentityid")
 il_personid = ll_businessentityid
 
 of_retrieve(This, String(ll_businessentityid))	
-ib_modify = False
-w_main.ib_modify = False
+
+
 
 il_last_row = currentrow
 
@@ -581,8 +579,9 @@ event dw_browser::retrieveend;call super::retrieveend;//close(w_progressbar)
 end event
 
 type tabpage_2 from u_tab_base`tabpage_2 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4096
+integer height = 2576
 dw_cust dw_cust
 st_2 st_2
 st_3 st_3
@@ -614,48 +613,35 @@ end on
 type dw_master from u_tab_base`dw_master within tabpage_2
 integer x = 64
 integer y = 196
-integer width = 3845
+integer width = 4014
 integer height = 844
 string dataobject = "d_businessentityaddress"
 end type
 
-event dw_master::itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
-end event
-
 type dw_detail from u_tab_base`dw_detail within tabpage_2
 integer x = 64
-integer y = 1216
-integer width = 3845
-integer height = 844
+integer y = 1168
+integer width = 4014
+integer height = 828
 string dataobject = "d_personphone"
 end type
 
-event dw_detail::itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
-end event
-
 type dw_persondetail from u_dw within tabpage_1
 integer x = 64
-integer y = 2024
-integer width = 3845
+integer y = 1956
+integer width = 4009
 integer height = 588
 integer taborder = 60
 boolean bringtotop = true
 string dataobject = "d_person"
 end type
 
-event itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
-end event
-
 event getfocus;call super::getfocus;iuo_currentdw = This
 
 end event
 
-event losefocus;call super::losefocus;IF Not ib_modify THEN
-	This.AcceptText( )
-END IF
+event losefocus;call super::losefocus;This.AcceptText( )
+
 end event
 
 event constructor;call super::constructor;This.SetTransObject(Sqlca)
@@ -663,7 +649,7 @@ end event
 
 type st_1 from statictext within tabpage_1
 integer x = 69
-integer y = 1912
+integer y = 1836
 integer width = 457
 integer height = 80
 boolean bringtotop = true
@@ -756,24 +742,20 @@ end type
 
 type dw_cust from u_dw within tabpage_2
 integer x = 64
-integer y = 2236
-integer width = 3845
+integer y = 2132
+integer width = 4014
 integer height = 384
 integer taborder = 80
 boolean bringtotop = true
 string dataobject = "d_customer"
 end type
 
-event itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
-end event
-
 event constructor;call super::constructor;This.SetTransObject(Sqlca)
 end event
 
 type st_2 from statictext within tabpage_2
 integer x = 69
-integer y = 2124
+integer y = 2016
 integer width = 457
 integer height = 80
 boolean bringtotop = true
@@ -791,7 +773,7 @@ end type
 
 type st_3 from statictext within tabpage_2
 integer x = 69
-integer y = 1104
+integer y = 1056
 integer width = 457
 integer height = 80
 boolean bringtotop = true
@@ -827,10 +809,10 @@ end type
 
 type cb_add from u_button within u_person
 boolean visible = false
-integer x = 2665
+integer x = 2848
 integer y = 84
 integer width = 366
-integer height = 96
+integer height = 116
 integer taborder = 10
 boolean bringtotop = true
 integer textsize = -10
@@ -854,10 +836,10 @@ end event
 
 type cb_del from u_button within u_person
 boolean visible = false
-integer x = 3104
+integer x = 3287
 integer y = 84
 integer width = 366
-integer height = 96
+integer height = 116
 integer taborder = 20
 boolean bringtotop = true
 integer textsize = -10
@@ -875,31 +857,18 @@ event clicked;call super::clicked;//============================================
 //--------------------------------------------------------------------
 //$<Modify History>:
 //====================================================================
-
-Integer li_modified
-
 Parent.Event ue_delete()
 
-li_modified =  tab_1.tabpage_2.dw_master.Modifiedcount() 
-li_modified = li_modified + tab_1.tabpage_2.dw_detail.Modifiedcount()
-li_modified = li_modified + tab_1.tabpage_2.dw_cust.Modifiedcount()
-li_modified = li_modified + tab_1.tabpage_1.dw_persondetail.Modifiedcount()
 
-IF li_modified  > 0 Then
-	ib_modify = True
-	w_main.ib_modify = True
-Else
-	ib_modify = False
-	w_main.ib_modify = False
-End IF
+
 end event
 
 type cb_save from u_button within u_person
 boolean visible = false
-integer x = 3543
+integer x = 3726
 integer y = 84
 integer width = 366
-integer height = 96
+integer height = 116
 integer taborder = 30
 boolean bringtotop = true
 integer textsize = -10

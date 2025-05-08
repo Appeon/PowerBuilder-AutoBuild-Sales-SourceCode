@@ -46,7 +46,7 @@ IF li_filenum <> -1 Then
 		li_rct = This.ImportJson(ls_json, ls_error, Primary!, 1)
 		IF li_rct > 0 Then
 		Else
-			Messagebox("Prompt", "Importing Json File failed !")
+			Messagebox("Prompt", "Importing Json File failed!")
 			Return -1
 		END IF
 		li_row = This.Rowcount()

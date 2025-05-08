@@ -71,7 +71,7 @@ public subroutine of_clearplaceholder ()
 public subroutine of_setcolor (long al_color_outer, long al_color_border, long al_color_inner, long al_color_bg)
 end prototypes
 
-event ue_resize;trigger event ue_resizeit()
+event ue_resize;//trigger event ue_resizeit()
 end event
 
 event ue_setstyle();long ll_color_outer, ll_color_border, ll_color_inner
@@ -361,7 +361,7 @@ type sle_search from singlelineedit within u_searchbox
 event ue_change pbm_enchange
 event ue_keydown pbm_keydown
 integer x = 110
-integer y = 16
+integer y = 8
 integer width = 1134
 integer height = 88
 integer taborder = 20
@@ -418,7 +418,7 @@ long fillcolor = 1073741824
 integer x = 5
 integer y = 4
 integer width = 1371
-integer height = 112
+integer height = 104
 integer cornerheight = 40
 integer cornerwidth = 46
 end type

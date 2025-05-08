@@ -70,6 +70,24 @@ destroy(this.st_1)
 destroy(this.p_1)
 end on
 
+event open;call super::open;string ls_version,ls_detailversion
+environment env
+integer rtn
+
+rtn = GetEnvironment(env)
+
+IF rtn <> 1 THEN RETURN
+choose case env.pbfixesrevision
+	case 0
+		ls_detailversion = ''
+	case 1
+		ls_detailversion = 'R2'
+	case 2
+		ls_detailversion = 'R3'
+end choose
+st_4.text = 'Version: PB20' + string(env.pbmajorrevision)+ls_detailversion + ' ' + string(env.pbbuildnumber)
+end event
+
 type st_6 from statictext within w_about
 integer x = 366
 integer y = 740
@@ -80,7 +98,7 @@ integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
-string facename = "Tahoma"
+string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 67108864
 string text = "Author: Appeon"
@@ -97,7 +115,7 @@ integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
-string facename = "Tahoma"
+string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 67108864
 string text = "Language: English"
@@ -114,10 +132,10 @@ integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
-string facename = "Tahoma"
+string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 67108864
-string text = "Version: 2022R2"
+string text = "Version: "
 boolean focusrectangle = false
 end type
 
@@ -131,7 +149,7 @@ integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
-string facename = "Tahoma"
+string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 67108864
 string text = "Product name: PowerBuilder"
@@ -139,16 +157,16 @@ boolean focusrectangle = false
 end type
 
 type st_2 from statictext within w_about
-integer x = 82
+integer x = 155
 integer y = 968
 integer width = 1426
 integer height = 84
-integer textsize = -12
+integer textsize = -10
 integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
 fontfamily fontfamily = swiss!
-string facename = "Tahoma"
+string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 67108864
 string text = "Copyright © Appeon. All rights reserved."
@@ -173,10 +191,10 @@ boolean focusrectangle = false
 end type
 
 type p_1 from picture within w_about
-integer x = 82
+integer x = 160
 integer y = 124
-integer width = 192
-integer height = 176
+integer width = 160
+integer height = 140
 string picturename = "image\about.png"
 boolean focusrectangle = false
 end type

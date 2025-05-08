@@ -1,0 +1,44 @@
+﻿$PBExportHeader$f_chk_webview_installed.srf
+global type f_chk_webview_installed from function_object
+end type
+
+forward prototypes
+global function integer f_chk_webview_installed ()
+end prototypes
+
+global function integer f_chk_webview_installed ();//
+Integer ll_Return
+string ls_location, ls_path_64bit, ls_path_user, ls_path_32bit, ls_Url
+
+ls_path_64bit = "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+ls_path_user = "HKEY_CURRENT_USER\Software\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+ls_path_32bit = "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}"
+ls_Url = "https://developer.microsoft.com/en-us/microsoft-edge/webview2/"
+
+//64 OS
+ll_Return = RegistryGet( ls_path_64bit, "location", RegString!, ls_location)
+//user(64 & 32)
+If ll_Return <> 1 Then
+	ll_Return = RegistryGet( ls_path_user, "location", RegString!, ls_location)
+End If
+//32 OS
+If ll_Return <> 1 Then
+	ll_Return = RegistryGet( ls_path_32bit, "location", RegString!, ls_location)
+End If
+
+//ls_location = C:\Program Files (x86)\Microsoft\EdgeWebView\Application
+If Pos(ls_location, "EdgeWebView" ) <= 0  or not (fileExists(ls_location) or directoryExists(ls_location)) Then
+	If MessageBox("WebView2 Runtime not installed", &
+		"Install the WebView2 Runtime from the following URL：~r~n" + ls_Url + "~r~nInstall now?", Question!, YesNo!, 2) = 1 Then
+					  
+		//OpenURL
+		OpenUrl(ls_Url)
+		Return -1
+	Else
+		Return -2
+	End If
+End If
+
+Return ll_Return
+end function
+

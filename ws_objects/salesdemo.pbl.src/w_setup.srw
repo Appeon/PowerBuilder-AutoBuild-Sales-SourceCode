@@ -140,8 +140,8 @@ end on
 
 event open;String ls_theme
 This.SetRedraw(False)
-is_file = "apisetup.ini"
-ls_theme = ProfileString(is_file, "Setup", "Theme", "Flat Design Blue")
+is_file = "config.ini"
+ls_theme = ProfileString(is_file, "Theme", "Theme", "Flat Design Blue")
 
 of_add_theme()
 ddlb_theme.Text = ls_theme
@@ -257,7 +257,7 @@ IF ls_theme <> is_theme  AND  ls_theme = "Do Not Use Themes" THEN
 //	ApplyTheme (is_theme_path + ls_theme)
 END IF
 
-SetProfileString(is_file, "Setup", "Theme", ls_theme)
+SetProfileString(is_file, "Theme", "Theme", ls_theme)
 
 IF Len(ls_msg) > 0 THEN
 	li_ret = Messagebox(gs_msg_title, "Saved the settings successfully." + ls_msg, Question!, YesNo!, 2)

@@ -19,6 +19,49 @@ hpb_1 hpb_1
 end type
 global w_progressbar w_progressbar
 
+forward prototypes
+public function integer f_center ()
+end prototypes
+
+public function integer f_center ();//*-----------------------------------------------------------------*/
+//*    f_Center:  Center the window
+//*-----------------------------------------------------------------*/
+int li_screenheight, li_screenwidth, li_rc, li_x=1, li_y=1
+environment	lenv_obj
+
+/*  Check for a window association with this object  */
+If IsNull ( this ) Or Not IsValid ( this ) Then Return -1
+
+/*  Get environment  */
+If GetEnvironment ( lenv_obj ) = -1 Then Return -1
+
+/*  Determine current screen resolution and validate  */
+li_screenheight = PixelsToUnits ( lenv_obj.ScreenHeight, YPixelsToUnits! )
+li_screenwidth  = PixelsToUnits ( lenv_obj.ScreenWidth, XPixelsToUnits! )
+If Not ( li_screenheight > 0 ) Or Not ( li_screenwidth > 0 ) Then Return -1
+
+/*  Get center points  */
+If li_screenwidth > this.Width Then
+	li_x = ( li_screenwidth / 2 ) - ( this.Width / 2 )
+End If
+If li_screenheight > this.Height Then
+	li_y = ( li_screenheight / 2 ) - ( this.Height / 2 )
+End If
+
+int nScreenX, nScreenY
+nScreenX = PixelsToUnits ( lenv_obj.screenx, XPixelsToUnits! )
+nScreenY = PixelsToUnits ( lenv_obj. screeny, YPixelsToUnits! )
+li_x = nScreenX + li_x
+li_y = nScreenY + li_y
+
+/*  Center window  */
+li_rc = this.Move ( li_x, li_y )
+If li_rc <> 1 Then Return -1
+
+
+Return 1
+end function
+
 on w_progressbar.create
 int iCurrent
 call super::create
@@ -42,7 +85,17 @@ End IF
 Return 1
 end event
 
-event open;timer(1)
+event open;String		ls_msg
+
+f_Center ( )
+ls_msg = message.stringparm
+
+If len(ls_msg) > 0 Then 
+	st_1.text = ls_msg
+End If
+
+
+timer(1)
 end event
 
 event activate;//

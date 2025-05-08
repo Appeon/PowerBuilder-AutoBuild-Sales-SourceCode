@@ -20,6 +20,8 @@ public function long of_parsetoarray (string as_source, string as_delimiter, ref
 public function long of_lastpos (string as_source, string as_target, long al_start)
 public function long of_lastpos (string as_source, string as_target)
 public function string of_quote (string as_source)
+public function string of_replaceall (string as_source, string as_old, string as_new, boolean ab_ignorecase)
+public function integer of_stringtoarray (string as_source, string as_delimiter, ref string as_array[])
 end prototypes
 
 public function long of_arraytostring (string as_source[], string as_delimiter, boolean ab_processempty, ref string as_ref_string);//////////////////////////////////////////////////////////////////////////////
@@ -769,6 +771,116 @@ End If
 
 // Enclosed original string in quotations.
 return '"' + as_source + '"'
+
+end function
+
+public function string of_replaceall (string as_source, string as_old, string as_new, boolean ab_ignorecase);//Replace all occurrences of one string inside another with a new string.
+
+
+Long	ll_Start
+Long	ll_OldLen
+Long	ll_NewLen
+String ls_Source
+
+//Check parameters
+If IsNull(as_source) or IsNull(as_old) or IsNull(as_new) or IsNull(ab_ignorecase) Then
+	string ls_null
+	SetNull(ls_null)
+	Return ls_null
+End If
+
+//Get the string lenghts
+ll_OldLen = Len(as_Old)
+ll_NewLen = Len(as_New)
+
+//Should function respect case.
+If ab_ignorecase Then
+	as_old = Lower(as_old)
+	ls_source = Lower(as_source)
+Else
+	ls_source = as_source
+End If
+
+//Search for the first occurrence of as_Old
+ll_Start = Pos(ls_Source, as_Old)
+
+Do While ll_Start > 0
+	// replace as_Old with as_New
+	as_Source = Replace(as_Source, ll_Start, ll_OldLen, as_New)
+	
+	//Should function respect case.
+	If ab_ignorecase Then 
+		ls_source = Lower(as_source)
+	Else
+		ls_source = as_source
+	End If
+	
+	// find the next occurrence of as_Old
+	ll_Start = Pos(ls_Source, as_Old, (ll_Start + ll_NewLen))
+Loop
+
+Return as_Source
+
+end function
+
+public function integer of_stringtoarray (string as_source, string as_delimiter, ref string as_array[]);//Parse a String using delimiter to an Array.
+
+long		ll_DelLen, ll_Pos, ll_Count, ll_Start, ll_Length
+string 	ls_holder
+
+//Check for NULL
+IF IsNull(as_source) or IsNull(as_delimiter) Then
+	long ll_null
+	SetNull(ll_null)
+	Return ll_null
+End If
+
+//Check for at leat one entry
+If Trim (as_source) = '' Then
+	Return 0
+End If
+
+//Get the length of the delimeter
+ll_DelLen = Len(as_Delimiter)
+
+ll_Pos =  Pos(Upper(as_source), Upper(as_Delimiter))
+
+//Only one entry was found
+if ll_Pos = 0 then
+	as_Array[1] = as_source
+	return 1
+end if
+
+//More than one entry was found - loop to get all of them
+ll_Count = 0
+ll_Start = 1
+Do While ll_Pos > 0
+	
+	//Set current entry
+	ll_Length = ll_Pos - ll_Start
+	ls_holder = Mid (as_source, ll_start, ll_length)
+
+	// Update array and counter
+	ll_Count ++
+	as_Array[ll_Count] = ls_holder
+	
+	//Set the new starting position
+	ll_Start = ll_Pos + ll_DelLen
+
+	ll_Pos =  Pos(Upper(as_source), Upper(as_Delimiter), ll_Start)
+Loop
+
+//Set last entry
+ls_holder = Mid (as_source, ll_start, Len (as_source))
+
+// Update array and counter if necessary
+if Len (ls_holder) > 0 then
+	ll_count++
+	as_Array[ll_Count] = ls_holder
+end if
+
+//Return the number of entries found
+Return ll_Count
 
 end function
 

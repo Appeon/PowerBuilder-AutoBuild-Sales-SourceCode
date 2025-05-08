@@ -1,0 +1,17 @@
+﻿$PBExportHeader$f_checkmodify.srf
+global type f_checkmodify from function_object
+end type
+
+forward prototypes
+global function boolean f_checkmodify (datawindow ad_dw)
+end prototypes
+
+global function boolean f_checkmodify (datawindow ad_dw);if ad_dw.modifiedcount() > 0 or ad_dw.deletedcount() > 0 then
+	return true
+else
+	return false
+end if
+
+return false
+end function
+

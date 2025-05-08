@@ -129,7 +129,7 @@ Choose Case iuo_currentdw.ClassName()
 		ll_data = iuo_currentdw.GetItemNumber(li_row, "daystomanufacture")
 		IF IsNull(ll_data) Then
 			lb_required = True
-			ls_colname = "Daystomanu Facture"
+			ls_colname = "DaysToManuFacture"
 			ls_col = 'daystomanufacture'
 		End IF
 End Choose
@@ -174,7 +174,6 @@ IF ldwc_cate.RowCount() > 0 Then
 	IF tab_1.tabpage_1.dw_browser.RowCount() > 0 Then
 		tab_1.tabpage_1.dw_browser.ScrollToRow(1)
 	End IF
-	ib_modify = False
 	Return 1
 Else
 	dw_cate.Reset()
@@ -197,10 +196,7 @@ DwItemStatus ldws_1
 
 iuo_currentdw.AcceptText()
 
-If Not ib_modify Then Return
-
-ib_modify = False
-w_main.ib_modify = False
+if f_checkmodify(tab_1.tabpage_1.dw_browser)= false and f_checkmodify(tab_1.tabpage_1.dw_productlist)= false and f_checkmodify(tab_1.tabpage_2.dw_detail)= false and f_checkmodify(tab_1.tabpage_2.dw_master) = false then return
 
 IF iuo_currentdw.ClassName( ) = "dw_browser" THEN
 	ll_row = il_last_row
@@ -366,12 +362,11 @@ IF li_row < 1 Then Return 1
 Choose Case iuo_currentdw.ClassName()
 	Case "dw_browser"		
 		
-		li_ret = MessageBox("Delete Sub Category", "All the products associated with this sub category will be deleted if you deleting the sub category. Are you sure you want to delete this sub category?" , Question!, yesno!)
+		li_ret = MessageBox("Delete Sub Category", "All the products associated with this sub category will be deleted if you delete the sub category. Are you sure you want to delete this sub category?" , Question!, yesno!)
 		
 		IF li_ret = 1 Then			
 			ldws_status = iuo_currentdw.GetItemStatus(li_row, 0 , Primary!)
 			IF ldws_status = New! Or ldws_status = NewModified! Then
-				ib_Modify = False
 				iuo_currentdw.DeleteRow(li_row)
 				Return 1
 			End IF
@@ -443,7 +438,6 @@ Choose Case iuo_currentdw.ClassName()
 			
 			ldws_status = iuo_currentdw.GetItemStatus(li_row, 0 , Primary!)
 			IF ldws_status = New! Or ldws_status = NewModified! Then
-				ib_Modify = False
 				iuo_currentdw.DeleteRow(li_row)
 				Return 1
 			End IF
@@ -489,8 +483,6 @@ Choose Case iuo_currentdw.ClassName()
 		End IF
 End Choose
 
-ib_Modify = False
-w_main.ib_modify = False
 Commit;
 
 Return 1
@@ -546,8 +538,6 @@ li_listrow =  tab_1.tabpage_1.dw_productlist.GetRow()
 ldws_sign = tab_1.tabpage_2.dw_master.GetItemStatus(li_row, 0, Primary!)
 
 //Save data
-w_main.ib_modify = False
-ib_Modify = False
 
 IF iuo_currentdw.update( ) = 1 THEN
       Commit;
@@ -562,12 +552,15 @@ IF ls_dwname =  "dw_master" and ldws_sign = NewModified! Then
 	SELECT MAX(IsNull(productid, 0)) INTO :ll_pkid FROM production.product;
 	iuo_currentdw.SetItem(li_row, "productid", ll_pkid)
 	tab_1.tabpage_2.dw_detail.SetItem(li_prow, "productid", ll_pkid)	
+	iuo_currentdw.resetupdate()
+	tab_1.tabpage_2.dw_detail.resetupdate()
 END IF
 
 tab_1.tabpage_2.dw_detail.AcceptText()
 
 IF lb_history THEN
 	IF tab_1.tabpage_2.dw_detail.Update( ) <> 1 THEN
+		tab_1.tabpage_2.dw_detail.resetupdate()
 		RollBack;
 		Return -1
 	END IF
@@ -611,9 +604,6 @@ ElseIF ldws_sign = DataModified! Then
 	tab_1.tabpage_1.dw_productlist.SetRow(li_listrow)
 	tab_1.tabpage_1.dw_productlist.ScrollToRow(li_listrow)
 End IF
-
-w_main.ib_modify = False
-ib_Modify = False
 
 li_row = tab_1.tabpage_1.dw_browser.GetRow()
 IF li_row > 0 Then
@@ -688,9 +678,6 @@ Else
 	
 End IF
 
-ib_Modify = True
-w_main.ib_modify = True
-
 Return 1
 
 end event
@@ -716,6 +703,7 @@ type tab_1 from u_tab_base`tab_1 within u_product
 integer x = 0
 integer width = 4133
 integer height = 2708
+tabposition tabposition = tabsonbottom!
 end type
 
 on tab_1.create
@@ -761,8 +749,9 @@ END IF
 end event
 
 type tabpage_1 from u_tab_base`tabpage_1 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4096
+integer height = 2576
 dw_productlist dw_productlist
 sle_filter sle_filter
 cb_filter cb_filter
@@ -798,7 +787,7 @@ end on
 type dw_browser from u_tab_base`dw_browser within tabpage_1
 integer x = 64
 integer y = 228
-integer width = 3845
+integer width = 4014
 integer height = 1088
 string dataobject = "d_subcategory"
 end type
@@ -819,7 +808,7 @@ DwItemStatus ldws_1
 
 IF currentrow < 1 Then Return
 
-IF ib_modify = True Then
+if f_checkmodify(tab_1.tabpage_1.dw_productlist)= true or f_checkmodify(tab_1.tabpage_2.dw_detail)= true or f_checkmodify(tab_1.tabpage_2.dw_master) = true   then 
 	tab_1.tabpage_2.dw_master.AcceptText()
 	IF tab_1.tabpage_2.dw_master.Modifiedcount() > 0 Then
 		li_ret = MessageBox("Save Change", "You have not saved your changes yet. Do you want to save the changes?" , Question!, YesNo!, 1)
@@ -848,9 +837,6 @@ IF ib_modify = True Then
 	End IF
 End IF
 
-ib_modify = False
-w_main.ib_modify = False
-
 This.SelectRow(0,False)
 This.SelectRow(currentrow,True)
 This.ScrollToRow(currentrow)
@@ -864,10 +850,6 @@ IF il_subcate_id = 0 OR Isnull(il_subcate_id) Then
 End if
 ls_data = String(il_subcate_id)
 of_retrieve(dw_productlist, ls_data)
-end event
-
-event dw_browser::itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
 end event
 
 event dw_browser::clicked;call super::clicked;IF row = il_last_row THEN Post Event RowFocusChanged(row)
@@ -887,8 +869,9 @@ tab_1.SelectTab(2)
 end event
 
 type tabpage_2 from u_tab_base`tabpage_2 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4096
+integer height = 2576
 st_1 st_1
 end type
 
@@ -908,7 +891,8 @@ end on
 type dw_master from u_tab_base`dw_master within tabpage_2
 integer x = 64
 integer y = 64
-integer width = 3845
+integer width = 4000
+integer height = 1304
 string dataobject = "d_product_detail"
 end type
 
@@ -987,23 +971,19 @@ Commit;
 MessageBox("Save Product Photo", "Saved the product photo successfully.")
 end event
 
-event dw_master::itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
-end event
-
 type dw_detail from u_tab_base`dw_detail within tabpage_2
 integer x = 64
 integer y = 1616
-integer width = 3845
-integer height = 988
+integer width = 4000
+integer height = 928
 string dataobject = "d_history_price"
 end type
 
 type dw_productlist from u_dw within tabpage_1
 integer x = 64
-integer y = 1564
-integer width = 3845
-integer height = 1056
+integer y = 1544
+integer width = 4014
+integer height = 976
 integer taborder = 40
 boolean bringtotop = true
 string dataobject = "d_product"
@@ -1017,7 +997,7 @@ end event
 event doubleclicked;call super::doubleclicked;tab_1.SelectTab(2)
 end event
 
-event rowfocuschanged;call super::rowfocuschanged;//====================================================================
+event rowfocuschanged;//====================================================================
 //$<Event>: rowfocuschanged
 //$<Arguments>:
 // 	%ScriptArgs%
@@ -1033,7 +1013,7 @@ Integer li_ret
 
 IF currentrow < 1 or This.RowCount( ) < 1 Then Return
 
-IF ib_modify = True Then
+if f_checkmodify(tab_1.tabpage_2.dw_detail)= true or f_checkmodify(tab_1.tabpage_2.dw_master) = true then 
 	tab_1.tabpage_2.dw_master.Accepttext()
 	IF tab_1.tabpage_2.dw_master.Modifiedcount() > 0  Then
 		li_ret = MessageBox("Save Change", "You have not saved your changes yet. Do you want to save the changes?" , Question!, YesNo!, 1)
@@ -1127,7 +1107,7 @@ end type
 
 type uo_search from u_searchbox within tabpage_1
 integer x = 64
-integer y = 1392
+integer y = 1372
 integer width = 1454
 integer taborder = 50
 boolean bringtotop = true
@@ -1184,7 +1164,7 @@ type dw_cate from u_dw within u_product
 integer x = 741
 integer y = 84
 integer width = 901
-integer height = 96
+integer height = 92
 integer taborder = 10
 boolean bringtotop = true
 string dataobject = "d_dddw_catesel"
@@ -1257,20 +1237,11 @@ event clicked;call super::clicked;//============================================
 //$<Modify History>:
 //====================================================================
 
-Integer li_modified
-
 Parent.Event ue_delete()
 
-li_modified =  tab_1.tabpage_2.dw_master.Modifiedcount() 
-li_modified = li_modified + tab_1.tabpage_1.dw_browser.Modifiedcount()
 
-IF li_modified  > 0 Then
-	ib_modify = True
-	w_main.ib_modify = True
-Else
-	ib_modify = False
-	w_main.ib_modify = False
-End IF
+
+
 end event
 
 type cb_save from u_button within u_product

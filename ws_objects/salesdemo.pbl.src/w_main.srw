@@ -4,6 +4,10 @@ global type w_main from window
 end type
 type mdi_1 from mdiclient within w_main
 end type
+type mdirbb_1 from ribbonbar within w_main
+end type
+type mditbb_1 from tabbedbar within w_main
+end type
 type rbb_main from ribbonbar within w_main
 end type
 end forward
@@ -24,17 +28,20 @@ long backcolor = 67108864
 string icon = ".\image\crm.ico"
 boolean toolbarvisible = false
 boolean center = true
+boolean tabbedview = true
+boolean maximizealltabbedsheets = true
 event ue_resize ( )
 event ue_tray ( )
+event ue_refresh_visible ( string as_title )
+event ue_refresh_status ( )
 mdi_1 mdi_1
+mdirbb_1 mdirbb_1
+mditbb_1 mditbb_1
 rbb_main rbb_main
 end type
 global w_main w_main
 
 type variables
-Boolean ib_modify = False
-String    is_model
-u_tab_base uo_current
 String		is_windowslists[]
 String		is_windows[], is_recents[]
 String		is_themename, is_themeold
@@ -64,8 +71,8 @@ public subroutine of_closewindow (string as_type)
 end prototypes
 
 event ue_resize();mdi_1.x = this.workspacex() 
-mdi_1.y = this.workspacey()  +  rbb_main.height 		// + 4									 
-mdi_1.height = this.workspaceHeight() - rbb_main.height // - 4	
+mdi_1.y = this.workspacey()  +  rbb_main.getbestheight()						 
+mdi_1.height = this.workspaceHeight() - rbb_main.getbestheight() 
 mdi_1.width  = this.workspaceWidth() 
 
 rbb_main.width = this.workspaceWidth() 
@@ -89,6 +96,37 @@ lnvo_taskbarutil.of_refreshnotificationarea( )
 Destroy lnvo_taskbarutil 
 end event
 
+event ue_refresh_visible(string as_title);choose case as_title
+		case "Address","Product","Order"
+			of_set_actionsbar(true,"All")
+			of_set_item_enabled('Create PDF',2,false)
+			of_set_item_enabled('Send Email',2,false)
+			of_set_item_enabled('Survey',2,false)
+		case 'Customer'
+			of_set_actionsbar(true,"All")
+			of_set_item_enabled('Create PDF',2,false)
+			of_set_item_enabled('Send Email',2,false)
+			of_set_item_enabled('Survey',2,true)
+		case "Statistics" 		
+			of_set_actionsbar(true,"Close")
+			of_set_actionsbar(false,"Action")		
+			of_set_actionsbar(false,"View")		
+			of_set_actionsbar(false,"Print")
+			of_set_item_enabled('Create PDF',2,true)
+			of_set_item_enabled('Send Email',2,true)
+			of_set_item_enabled('Survey',2,false)
+		case ""			
+			
+		case else
+			
+	end choose 	
+	of_refresh_status(as_title, true)	
+	
+end event
+
+event ue_refresh_status();of_set_actionsbar(false,"All")
+end event
+
 public subroutine of_largebuttonclicked (long itemhandle);RibbonLargeButtonItem			lr_largebuttonitem
 integer								li_return
 string									ls_text
@@ -98,15 +136,27 @@ li_return = rbb_main.GetLargebutton(itemhandle, lr_largebuttonitem)
 if li_return  = 1 then
 	ls_text = lr_largebuttonitem.text
 	choose case ls_text
-		case "Address","Customer","Product","Order"
+		case "Address","Product","Order"
 			of_opensheet(ls_text)
 			of_set_actionsbar(true,"All")
+			of_set_item_enabled('Create PDF',2,false)
+			of_set_item_enabled('Send Email',2,false)
+			of_set_item_enabled('Survey',2,false)
+		case "Customer"
+			of_opensheet(ls_text)
+			of_set_actionsbar(true,"All")
+			of_set_item_enabled('Create PDF',2,false)
+			of_set_item_enabled('Send Email',2,false)
+			of_set_item_enabled('Survey',2,true)
 		case "Statistics" 		
 			of_opensheet(ls_text)
 			of_set_actionsbar(true,"Close")
 			of_set_actionsbar(false,"Action")		
 			of_set_actionsbar(false,"View")		
 			of_set_actionsbar(false,"Print")
+			of_set_item_enabled('Create PDF',2,true)
+			of_set_item_enabled('Send Email',2,true)
+			of_set_item_enabled('Survey',2,false)
 		case ""			
 			
 		case else
@@ -190,6 +240,18 @@ if li_return = 1 then
 				of_set_actionsbar(true,"All")
 //				of_set_actionsbar(false,"Print")		
 				of_refresh_status(ls_text, true)	
+				of_set_item_enabled('Create PDF',2,false)
+				of_set_item_enabled('Send Email',2,false)
+				of_set_item_enabled('Survey',2,false)
+			case "Customer"
+				of_opensheet(ls_text)
+				of_set_actionsbar(true,"All")
+//				of_set_actionsbar(false,"Print")		
+				of_refresh_status(ls_text, true)	
+				of_set_item_enabled('Create PDF',2,false)
+				of_set_item_enabled('Send Email',2,false)
+				of_set_item_enabled('Survey',2,true)
+				of_set_item_enabled('Survey',2,false)
 			case "Statistics"
 				of_opensheet(ls_text)
 				of_set_actionsbar(true,"All")
@@ -198,6 +260,8 @@ if li_return = 1 then
 				of_set_actionsbar(false,"Print")		
 //				of_set_actionsbar(true,"Close")
 				of_refresh_status(ls_text, true)	
+				of_set_item_enabled('Create PDF',2,true)
+				of_set_item_enabled('Send Email',2,true)
 			case "Help","Elevate 2019"
 				of_opensheet(ls_text)
 				of_set_actionsbar(false,"All")				
@@ -296,7 +360,14 @@ if li_return  = 1 then
 //		case "Add"
 //			//trigger event.
 //			//lw_base.event ue_add( )
-//			
+		case "Create PDF"
+			
+//			openwithparm(w_pdfbuilder_setting,lw_base.title)
+			openwithparm(w_createpdf,lw_base.title)
+		case "Send Email"
+			openwithparm(w_sendemail,lw_base.title)	
+		case "Survey"
+			openwithparm(w_Survey,lw_base.title) 
 		case ""
 			
 		case else
@@ -321,26 +392,19 @@ if li_return  = 1 then
 			If rbb_main.isminimized( ) Then
 				rbb_main.setminimized( false)
 				ls_picturename ="ArrowUpSmall!"
-				gb_expand = True
+			
 			Else
 				rbb_main.setminimized( true)
 				ls_picturename ="ArrowDownSmall!"
-				gb_expand = False
+				
 			End If
 			lr_Tabbuttonitem.picturename = ls_picturename
 			li_return = rbb_main.SetTabButton(lr_Tabbuttonitem.itemhandle, lr_Tabbuttonitem)	
 			this.event ue_resize( )
 			
-//			lw_base  = this.getactivesheet( )
-//			if isvalid(lw_base)  then 
-//				lw_base.windowstate = Maximized!
-//			end if
-		case "Tab Help"
-			//iNet		lo_iNet																									// NO=>use iNet
-			//lo_inet	=	CREATE  iNet																						// Instatiate
-			//lo_iNet.Hyperlinktourl ("www.appeon.com" )																// Load URL
-			//Destroy  lo_iNet																									// Unload
 
+		case "Tab Help"
+				
 			of_opensheet("Elevate 2019")
 			of_refresh_status("Elevate 2019", true)	
 			of_refresh_historymenu()		
@@ -369,11 +433,22 @@ if li_return = 1 then
 	if li_return = 1 then
 		ls_text = lr_MenuItem.text 
 		Choose case ls_text			
-			case "Address","Customer","Product","Order" 
+			case "Address","Product","Order" 
 				of_opensheet(ls_text)
 				of_refresh_status(ls_text, true)		
 				of_set_actionsbar(true,"All")
-//				of_set_actionsbar(false,"Print")			
+//				of_set_actionsbar(false,"Print")	
+				of_set_item_enabled('Create PDF',2,false)
+				of_set_item_enabled('Send Email',2,false)
+				of_set_item_enabled('Survey',2,false)
+			case "Customer"
+					of_opensheet(ls_text)
+				of_refresh_status(ls_text, true)		
+				of_set_actionsbar(true,"All")
+//				of_set_actionsbar(false,"Print")	
+				of_set_item_enabled('Create PDF',2,false)
+				of_set_item_enabled('Send Email',2,false)
+				of_set_item_enabled('Survey',2,true)
 			case "Statistics"
 				of_opensheet(ls_text)
 				of_refresh_status(ls_text, true)		
@@ -381,6 +456,9 @@ if li_return = 1 then
 				of_set_actionsbar(false,"Action")
 				of_set_actionsbar(false,"View")
 				of_set_actionsbar(false,"Print")		
+				of_set_item_enabled('Create PDF',2,true)
+				of_set_item_enabled('Send Email',2,true)
+				of_set_item_enabled('Survey',2,false)
 //				of_set_actionsbar(true,"Close")
 			case "Help","Elevate 2019"
 				of_opensheet(ls_text)
@@ -640,13 +718,18 @@ Choose case as_panel
 		of_add_items(lstr_item, "Print Title" ,4)
 		of_add_items(lstr_item, "Close All" ,2)
 		of_add_items(lstr_item, "Close" ,2)
+		of_add_items(lstr_item,"Create PDF",2)
+		of_add_items(lstr_item,"Create Email",2)
+		of_add_items(lstr_item,"Survey",2)
 	case "Action"
 		of_add_items(lstr_item, "Add" ,2)
 		of_add_items(lstr_item, "Delete" ,2)
 		of_add_items(lstr_item, "Edit" ,2)
 		of_add_items(lstr_item, "Save" ,2)
 		of_add_items(lstr_item, "Export" ,2)	
-		of_add_items(lstr_item, "Cancel" ,2)		
+		of_add_items(lstr_item, "Cancel" ,2)
+		of_add_items(lstr_item,"Create PDF",2)
+		of_add_items(lstr_item,"Create Email",2)
 	case "View"		
 		of_add_items(lstr_item, "First" ,2)
 		of_add_items(lstr_item, "Prior" ,2)
@@ -811,14 +894,20 @@ end subroutine
 on w_main.create
 if this.MenuName = "m_menu" then this.MenuID = create m_menu
 this.mdi_1=create mdi_1
+this.mditbb_1=create mditbb_1
+this.mdirbb_1=create mdirbb_1
 this.rbb_main=create rbb_main
 this.Control[]={this.mdi_1,&
+this.mditbb_1,&
+this.mdirbb_1,&
 this.rbb_main}
 end on
 
 on w_main.destroy
 if IsValid(MenuID) then destroy(MenuID)
 destroy(this.mdi_1)
+destroy(this.mdirbb_1)
+destroy(this.mditbb_1)
 destroy(this.rbb_main)
 end on
 
@@ -838,6 +927,20 @@ end event
 
 type mdi_1 from mdiclient within w_main
 long BackColor=268435456
+end type
+
+type mdirbb_1 from ribbonbar within w_main
+int X=0
+int Y=0
+int Width=0
+int Height=596
+end type
+
+type mditbb_1 from tabbedbar within w_main
+int X=0
+int Y=0
+int Width=0
+int Height=104
 end type
 
 type rbb_main from ribbonbar within w_main

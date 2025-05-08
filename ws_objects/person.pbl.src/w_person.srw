@@ -10,6 +10,7 @@ global type w_person from w_base
 integer width = 4165
 integer height = 2824
 string title = "Customer"
+string icon = ".\image\Customer.ico"
 boolean center = false
 uo_1 uo_1
 end type
@@ -41,30 +42,11 @@ uo_1.tab_1.tabpage_1.dw_browser.SetFocus()
 
 end event
 
-event resize;call super::resize;//Int li_height_gap
-//uo_1.tab_1.Height =  newheight - (ii_win_h - ii_tab_h)
-//uo_1.tab_1.tabpage_1.dw_browser.Height = newheight -  (ii_win_h - ii_browser_h)
-//uo_1.tab_1.tabpage_1.st_1.y = uo_1.tab_1.tabpage_1.dw_browser.y + uo_1.tab_1.tabpage_1.dw_browser.Height + 64
-//uo_1.tab_1.tabpage_1.dw_persondetail.y = uo_1.tab_1.tabpage_1.st_1.y + uo_1.tab_1.tabpage_1.st_1.Height + 32
-//
-//
-//li_height_gap =( w_main.rbb_main.Height + 4 - 92) / 2  //92 is tab height 
-//
-//If gb_expand Then
-//	uo_1.tab_1.tabpage_2.dw_master.Height =  ii_detail_h - li_height_gap	
-//Else
-//	uo_1.tab_1.tabpage_2.dw_master.Height =  ii_detail_h
-//End If
-//uo_1.tab_1.tabpage_2.dw_detail.Height = uo_1.tab_1.tabpage_2.dw_master.Height 
-//uo_1.tab_1.tabpage_2.st_3.y = uo_1.tab_1.tabpage_2.dw_master.y + uo_1.tab_1.tabpage_2.dw_master.Height + 64
-//uo_1.tab_1.tabpage_2.dw_detail.y = uo_1.tab_1.tabpage_2.st_3.y + uo_1.tab_1.tabpage_2.st_3.Height + 32
-//uo_1.tab_1.tabpage_2.st_2.y = uo_1.tab_1.tabpage_2.dw_detail.y + uo_1.tab_1.tabpage_2.dw_detail.Height + 64
-//uo_1.tab_1.tabpage_2.dw_cust.y = uo_1.tab_1.tabpage_2.st_2.y + uo_1.tab_1.tabpage_2.st_2.Height + 32
-
+event resize;call super::resize;
 
 uo_1.Height = newheight
 uo_1.Width = newwidth + 4
-uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 64 
+uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 20
 uo_1.tab_1.Width = newwidth  - uo_1.tab_1.x + 4
 //Browse
 uo_1.tab_1.tabpage_1.dw_browser.Height = newheight - uo_1.tab_1.tabpage_1.dw_browser.y - uo_1.tab_1.tabpage_1.st_1.Height  &

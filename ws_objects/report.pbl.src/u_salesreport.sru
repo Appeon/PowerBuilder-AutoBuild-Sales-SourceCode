@@ -80,6 +80,13 @@ dw_report3 dw_report3
 cb_1 cb_1
 dw_gcfilter3 dw_gcfilter3
 end type
+type tabpage_3 from userobject within tab_1
+end type
+type uo_1 from u_graphcontrol within tabpage_3
+end type
+type tabpage_3 from userobject within tab_1
+uo_1 uo_1
+end type
 type st_graph from statictext within u_salesreport
 end type
 type ddplb_graph from dropdownpicturelistbox within u_salesreport
@@ -87,7 +94,7 @@ end type
 end forward
 
 global type u_salesreport from u_tab_base
-integer width = 4133
+integer width = 4855
 integer height = 2720
 long backcolor = 16777215
 event type integer ue_categoryreport_preview_gc ( )
@@ -1201,8 +1208,8 @@ String ls_color
 String ls_theme
 String ls_file
 
-ls_file = "apisetup.ini"
-ls_theme = ProfileString(ls_file, "Setup", "Theme", "Flat Design Blue")
+ls_file = "config.ini"
+ls_theme = ProfileString(ls_file, "Theme", "Theme", "Flat Design Blue")
 ls_color = ProfileString(ls_file, "BackColor", ls_theme, "16764603")
 
 Choose Case ai_tab
@@ -1288,23 +1295,27 @@ end event
 
 type tab_1 from u_tab_base`tab_1 within u_salesreport
 integer x = 0
-integer width = 4133
+integer width = 4855
 integer height = 2708
+tabposition tabposition = tabsonbottom!
 tabpage_4 tabpage_4
 tabpage_5 tabpage_5
 tabpage_6 tabpage_6
+tabpage_3 tabpage_3
 end type
 
 on tab_1.create
 this.tabpage_4=create tabpage_4
 this.tabpage_5=create tabpage_5
 this.tabpage_6=create tabpage_6
+this.tabpage_3=create tabpage_3
 call super::create
 this.Control[]={this.tabpage_1,&
 this.tabpage_2,&
 this.tabpage_4,&
 this.tabpage_5,&
-this.tabpage_6}
+this.tabpage_6,&
+this.tabpage_3}
 end on
 
 on tab_1.destroy
@@ -1312,6 +1323,7 @@ call super::destroy
 destroy(this.tabpage_4)
 destroy(this.tabpage_5)
 destroy(this.tabpage_6)
+destroy(this.tabpage_3)
 end on
 
 event tab_1::selectionchanged;call super::selectionchanged;
@@ -1341,8 +1353,9 @@ End Choose
 end event
 
 type tabpage_1 from u_tab_base`tabpage_1 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4818
+integer height = 2576
 string text = " Category Statistics "
 dw_filter dw_filter
 cb_filter cb_filter
@@ -1388,7 +1401,7 @@ type dw_browser from u_tab_base`dw_browser within tabpage_1
 integer x = 64
 integer y = 564
 integer width = 3845
-integer height = 2056
+integer height = 1988
 string dataobject = "d_categorysalesreport_m"
 boolean hscrollbar = true
 boolean hsplitscroll = true
@@ -1398,8 +1411,9 @@ event dw_browser::getfocus;//
 end event
 
 type tabpage_2 from u_tab_base`tabpage_2 within tab_1
-integer width = 3973
-integer height = 2676
+integer x = 18
+integer width = 4818
+integer height = 2576
 string text = " Subcategory Statistics "
 dw_subfilter dw_subfilter
 cb_subfilter cb_subfilter
@@ -1425,7 +1439,7 @@ type dw_master from u_tab_base`dw_master within tabpage_2
 integer x = 64
 integer y = 404
 integer width = 3845
-integer height = 2224
+integer height = 2152
 string dataobject = "d_subcategorysalesreport_m"
 boolean hscrollbar = true
 boolean vscrollbar = true
@@ -1440,7 +1454,7 @@ boolean visible = false
 end type
 
 type dw_filter from u_dw within tabpage_1
-integer x = 55
+integer x = 32
 integer y = 396
 integer width = 1691
 integer height = 120
@@ -1455,7 +1469,7 @@ type cb_filter from u_button within tabpage_1
 integer x = 1778
 integer y = 404
 integer width = 366
-integer height = 96
+integer height = 100
 integer taborder = 50
 boolean bringtotop = true
 integer textsize = -10
@@ -1482,6 +1496,7 @@ integer y = 408
 integer width = 1358
 integer height = 124
 boolean bringtotop = true
+integer minposition = 1
 integer maxposition = 100
 integer position = 50
 integer tickfrequency = 10
@@ -1498,7 +1513,7 @@ integer y = 56
 integer width = 2807
 integer height = 84
 boolean bringtotop = true
-integer textsize = -11
+integer textsize = -10
 integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
@@ -1506,17 +1521,17 @@ fontfamily fontfamily = swiss!
 string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 553648127
-string text = "Show sales percentages of different categories."
+string text = "Show sales percentages of different categories"
 boolean checked = true
 end type
 
 type cbx_salesroom from checkbox within tabpage_1
 integer x = 64
-integer y = 164
+integer y = 156
 integer width = 2807
 integer height = 84
 boolean bringtotop = true
-integer textsize = -11
+integer textsize = -10
 integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
@@ -1524,17 +1539,17 @@ fontfamily fontfamily = swiss!
 string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 553648127
-string text = "Compare the sales amount of the selected period and the previous period by category."
+string text = "Compare the sales amount of the selected period and the previous period by category"
 boolean checked = true
 end type
 
 type cbx_saleqty from checkbox within tabpage_1
 integer x = 64
-integer y = 272
+integer y = 256
 integer width = 2807
 integer height = 84
 boolean bringtotop = true
-integer textsize = -11
+integer textsize = -10
 integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
@@ -1542,16 +1557,16 @@ fontfamily fontfamily = swiss!
 string facename = "Segoe UI"
 long textcolor = 33554432
 long backcolor = 553648127
-string text = "Compare the sales volumes of the selected period and the previous period by category."
+string text = "Compare the sales volumes of the selected period and the previous period by category"
 end type
 
 type st_1 from statictext within tabpage_1
 integer x = 2350
-integer y = 408
+integer y = 416
 integer width = 238
 integer height = 88
 boolean bringtotop = true
-integer textsize = -11
+integer textsize = -10
 integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!
@@ -1566,7 +1581,7 @@ end type
 type dw_subfilter from u_dw within tabpage_2
 integer x = 64
 integer y = 48
-integer width = 3419
+integer width = 3808
 integer height = 128
 integer taborder = 50
 boolean bringtotop = true
@@ -1597,10 +1612,10 @@ event constructor;call super::constructor;This.SetTransObject(Sqlca)
 end event
 
 type cb_subfilter from u_button within tabpage_2
-integer x = 3529
-integer y = 60
+integer x = 1097
+integer y = 224
 integer width = 366
-integer height = 96
+integer height = 100
 integer taborder = 50
 boolean bringtotop = true
 integer textsize = -10
@@ -1626,10 +1641,10 @@ end event
 
 type tabpage_4 from userobject within tab_1
 boolean visible = false
-integer x = 142
+integer x = 18
 integer y = 16
-integer width = 3973
-integer height = 2676
+integer width = 4818
+integer height = 2576
 long backcolor = 67108864
 string text = "Google Charts"
 long tabtextcolor = 33554432
@@ -1679,7 +1694,7 @@ type wb_2 from webbrowser within tabpage_4
 integer x = 64
 integer y = 1124
 integer width = 3845
-integer height = 1492
+integer height = 1436
 end type
 
 type st_2 from statictext within tabpage_4
@@ -1703,7 +1718,7 @@ end type
 type ddplb_gc_graph from dropdownpicturelistbox within tabpage_4
 integer x = 411
 integer y = 236
-integer width = 782
+integer width = 585
 integer height = 352
 integer taborder = 20
 boolean bringtotop = true
@@ -1797,10 +1812,10 @@ End Choose
 end event
 
 type tabpage_5 from userobject within tab_1
-integer x = 142
+integer x = 18
 integer y = 16
-integer width = 3973
-integer height = 2676
+integer width = 4818
+integer height = 2576
 long backcolor = 67108864
 string text = "Google Charts 1"
 long tabtextcolor = 33554432
@@ -1841,7 +1856,7 @@ type wb_3 from webbrowser within tabpage_5
 integer x = 64
 integer y = 1060
 integer width = 3845
-integer height = 1564
+integer height = 1500
 end type
 
 type dw_report2 from u_dw within tabpage_5
@@ -1856,7 +1871,7 @@ end type
 
 type ddplb_graph_gc2 from dropdownpicturelistbox within tabpage_5
 integer x = 2862
-integer y = 64
+integer y = 60
 integer width = 558
 integer height = 352
 integer taborder = 30
@@ -1882,7 +1897,7 @@ end event
 
 type st_4 from statictext within tabpage_5
 integer x = 2523
-integer y = 72
+integer y = 68
 integer width = 325
 integer height = 88
 boolean bringtotop = true
@@ -1900,9 +1915,9 @@ end type
 
 type cb_gcfilter2 from u_button within tabpage_5
 integer x = 3529
-integer y = 60
+integer y = 56
 integer width = 366
-integer height = 96
+integer height = 100
 integer taborder = 60
 boolean bringtotop = true
 integer textsize = -10
@@ -1965,10 +1980,10 @@ End Choose
 end event
 
 type tabpage_6 from userobject within tab_1
-integer x = 142
+integer x = 18
 integer y = 16
-integer width = 3973
-integer height = 2676
+integer width = 4818
+integer height = 2576
 long backcolor = 67108864
 string text = "Google Charts 2"
 long tabtextcolor = 33554432
@@ -2001,7 +2016,7 @@ type wb_1 from webbrowser within tabpage_6
 integer x = 64
 integer y = 1056
 integer width = 3845
-integer height = 1568
+integer height = 1504
 end type
 
 type dw_report3 from u_dw within tabpage_6
@@ -2018,7 +2033,7 @@ type cb_1 from u_button within tabpage_6
 integer x = 1810
 integer y = 56
 integer width = 366
-integer height = 96
+integer height = 100
 integer taborder = 60
 boolean bringtotop = true
 integer textsize = -10
@@ -2063,10 +2078,42 @@ boolean border = false
 borderstyle borderstyle = stylebox!
 end type
 
+type tabpage_3 from userobject within tab_1
+integer x = 18
+integer y = 16
+integer width = 4818
+integer height = 2576
+long backcolor = 67108864
+string text = "Modern Graph"
+long tabtextcolor = 33554432
+long picturemaskcolor = 536870912
+uo_1 uo_1
+end type
+
+on tabpage_3.create
+this.uo_1=create uo_1
+this.Control[]={this.uo_1}
+end on
+
+on tabpage_3.destroy
+destroy(this.uo_1)
+end on
+
+type uo_1 from u_graphcontrol within tabpage_3
+integer y = 16
+integer width = 4215
+integer height = 2532
+integer taborder = 20
+end type
+
+on uo_1.destroy
+call u_graphcontrol::destroy
+end on
+
 type st_graph from statictext within u_salesreport
 boolean visible = false
-integer x = 215
-integer y = 260
+integer x = 78
+integer y = 236
 integer width = 325
 integer height = 88
 boolean bringtotop = true
@@ -2084,13 +2131,13 @@ end type
 
 type ddplb_graph from dropdownpicturelistbox within u_salesreport
 boolean visible = false
-integer x = 549
-integer y = 256
-integer width = 782
-integer height = 352
+integer x = 421
+integer y = 232
+integer width = 585
+integer height = 348
 integer taborder = 50
 boolean bringtotop = true
-integer textsize = -10
+integer textsize = -9
 integer weight = 400
 fontcharset fontcharset = ansi!
 fontpitch fontpitch = variable!

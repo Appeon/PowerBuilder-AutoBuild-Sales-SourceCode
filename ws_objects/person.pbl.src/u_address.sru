@@ -61,7 +61,6 @@ IF ldwc_child.RowCount() > 0 Then
 	IF tab_1.tabpage_1.dw_browser.RowCount() > 0 Then
 		tab_1.tabpage_1.dw_browser.ScrollToRow(1)
 	End IF
-	ib_modify = False
 	Return 1
 Else
 	ldwc_child.SetTransObject(Sqlca)
@@ -179,8 +178,6 @@ li_ret = MessageBox("Delete Address", "Are you sure you want to delete this addr
 IF li_ret = 1 Then	
 	ldws_status = iuo_currentdw.GetItemStatus(li_row, 0 , Primary!)
 	IF ldws_status = New! Or ldws_status = NewModified! Then
-		ib_Modify = False
-		w_main.ib_modify = False
 		iuo_currentdw.DeleteRow(li_row)
 		iuo_currentdw.ReSetUpdate()
 		Return 1
@@ -209,9 +206,6 @@ IF li_ret = 1 Then
 		End IF
 	End IF	
 End IF
-
-ib_Modify = False
-w_main.ib_modify = False
 
 Return 1
 end event
@@ -252,8 +246,6 @@ ElseIF ldws_sign = DataModified! Then
 End IF
 
 MessageBox(gs_msg_title, "Saved the data successfully.")
-ib_modify = False
-w_main.ib_modify = False
 
 tab_1.tabpage_1.dw_browser.ScrollToRow(li_listrow)
 tab_1.tabpage_1.dw_browser.SelectRow (0, False)
@@ -290,7 +282,7 @@ end event
 event ue_add;call super::ue_add;Integer li_row
 DwItemStatus ldws_sign
 
-IF ib_Modify = True Then
+IF f_checkmodify(tab_1.tabpage_2.dw_master) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true Then
 	MessageBox(gs_msg_title, "Please save the data first.")
 	
 	Return 1
@@ -304,9 +296,6 @@ iuo_currentdw.ScrollToRow(li_row)
 
 ldws_sign = iuo_currentdw.getitemstatus(li_row,0,primary!)
 if ldws_sign = new! or ldws_sign = notmodified! then return 1
-ib_Modify = True
-w_main.ib_modify = True 
-
 Return 1
 end event
 
@@ -314,6 +303,7 @@ type tab_1 from u_tab_base`tab_1 within u_address
 integer x = 0
 integer width = 4119
 integer height = 2708
+tabposition tabposition = tabsonbottom!
 end type
 
 on tab_1.create
@@ -326,14 +316,14 @@ on tab_1.destroy
 call super::destroy
 end on
 
-event tab_1::selectionchanging;call super::selectionchanging;IF ib_Modify = True Then
+event tab_1::selectionchanging;call super::selectionchanging;IF f_checkmodify(tab_1.tabpage_2.dw_detail) = true Then
 	MessageBox(gs_msg_title, "Please save the data first.")
 	Return 1
 End IF
 
 IF oldindex = 2 THEN
 	tab_1.tabpage_2.dw_master.Accepttext( )
-	IF  tab_1.tabpage_2.dw_master.ModifiedCount ( ) > 0 Then
+	IF f_checkmodify(tab_1.tabpage_2.dw_master) = true Then
 		MessageBox(gs_msg_title, "Please save the data first.")
 		Return 1
 	END IF
@@ -360,8 +350,9 @@ END IF
 end event
 
 type tabpage_1 from u_tab_base`tabpage_1 within tab_1
-integer width = 3959
-integer height = 2676
+integer x = 18
+integer width = 4082
+integer height = 2576
 dw_filter dw_filter
 cb_retrieve cb_retrieve
 cbx_1 cbx_1
@@ -393,13 +384,13 @@ end on
 type dw_browser from u_tab_base`dw_browser within tabpage_1
 integer x = 64
 integer y = 236
-integer width = 3840
-integer height = 2380
+integer width = 3991
+integer height = 2324
 string dataobject = "d_address"
 boolean hscrollbar = true
 end type
 
-event dw_browser::rowfocuschanged;call super::rowfocuschanged;//====================================================================
+event dw_browser::rowfocuschanged;//====================================================================
 //$<Function>: of_winopen
 //$<Arguments>:
 // 	%ScriptArgs%
@@ -409,13 +400,13 @@ event dw_browser::rowfocuschanged;call super::rowfocuschanged;//================
 //--------------------------------------------------------------------
 //$<Modify History>:
 //====================================================================
-Long  ll_addressid
+Long ll_addressid
 Integer li_ret
 
 IF currentrow < 1 Then Return -1
 
 tab_1.tabpage_2.dw_master.AcceptText()
-IF ib_Modify = True Then
+IF f_checkmodify(tab_1.tabpage_2.dw_detail) = true Then
 	li_ret = MessageBox("Save Change", "You have not saved your changes yet.  Do you want to save the changes?" , Question!, YesNo!, 1)
 	IF li_ret = 1 Then
 		tab_1.SelectedTab = 2
@@ -432,8 +423,6 @@ ll_addressid = This.GetItemNumber(currentrow, "addressid")
 
 tab_1.tabpage_2.dw_master.Retrieve(ll_addressid)
 
-ib_modify = False
-w_main.ib_modify = False
 
 il_last_row = currentrow
 
@@ -441,8 +430,9 @@ il_last_row = currentrow
 end event
 
 type tabpage_2 from u_tab_base`tabpage_2 within tab_1
-integer width = 3959
-integer height = 2676
+integer x = 18
+integer width = 4082
+integer height = 2576
 end type
 
 type dw_master from u_tab_base`dw_master within tabpage_2
@@ -453,13 +443,6 @@ integer height = 648
 string dataobject = "d_address_free"
 boolean border = false
 end type
-
-event dw_master::itemchanged;call super::itemchanged;ib_modify = True
-w_main.ib_modify = True
-
-
-
-end event
 
 type dw_detail from u_tab_base`dw_detail within tabpage_2
 boolean visible = false
@@ -526,7 +509,8 @@ end type
 
 type uo_search from u_searchbox within tabpage_1
 integer x = 1161
-integer y = 56
+integer y = 64
+integer height = 104
 integer taborder = 70
 boolean bringtotop = true
 end type
@@ -544,10 +528,10 @@ event ue_search;call super::ue_search;iuo_parent.Event ue_filter()
 end event
 
 type cb_add from u_button within u_address
-integer x = 2784
+integer x = 2935
 integer y = 76
 integer width = 366
-integer height = 96
+integer height = 116
 integer taborder = 40
 boolean bringtotop = true
 integer textsize = -10
@@ -559,10 +543,10 @@ event clicked;call super::clicked;Parent.Event ue_add()
 end event
 
 type cb_delete from u_button within u_address
-integer x = 3168
+integer x = 3319
 integer y = 76
 integer width = 366
-integer height = 96
+integer height = 116
 integer taborder = 50
 boolean bringtotop = true
 integer textsize = -10
@@ -574,10 +558,10 @@ event clicked;call super::clicked;Parent.Event ue_delete()
 end event
 
 type cb_save from u_button within u_address
-integer x = 3547
+integer x = 3698
 integer y = 76
 integer width = 366
-integer height = 96
+integer height = 116
 integer taborder = 50
 boolean bringtotop = true
 integer textsize = -10
@@ -590,10 +574,10 @@ end event
 
 type cb_import from u_button within u_address
 boolean visible = false
-integer x = 247
-integer y = 764
+integer x = 690
+integer y = 740
 integer width = 366
-integer height = 96
+integer height = 100
 integer taborder = 50
 boolean bringtotop = true
 integer textsize = -10
@@ -605,7 +589,7 @@ event clicked;call super::clicked;Int li_row
 DwItemStatus ldws_sign
 li_row = tab_1.tabpage_2.dw_master.GetRow()
 
-IF ib_Modify = True Then
+IF f_checkmodify(tab_1.tabpage_2.dw_master) = true or f_checkmodify(tab_1.tabpage_2.dw_detail) = true Then
 	MessageBox(gs_msg_title, "Please save the data first.")
 	Return 1
 End IF
@@ -620,7 +604,6 @@ li_row = tab_1.tabpage_2.dw_master.GetRow()
 tab_1.tabpage_2.dw_master.SetItem(li_row, "addressid", 0)
 iuo_currentdw = tab_1.tabpage_2.dw_master
 
-ib_modify = True
-w_main.ib_modify = True
+
 end event
 

@@ -7,9 +7,10 @@ end type
 end forward
 
 global type w_salesreport from w_base
-integer width = 4027
+integer width = 4507
 integer height = 2904
 string title = "Statistics"
+string icon = ".\image\Statistics.ico"
 uo_1 uo_1
 end type
 global w_salesreport w_salesreport
@@ -36,7 +37,7 @@ end event
 event resize;call super::resize;SetRedraw(False)
 uo_1.Height = newheight
 uo_1.Width = newwidth + 4
-uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 64 
+uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 20 
 uo_1.tab_1.Width = newwidth  - uo_1.tab_1.x + 4
 //Browse
 uo_1.tab_1.tabpage_1.dw_browser.Height = newheight - uo_1.tab_1.tabpage_1.dw_browser.y - 64 * 2

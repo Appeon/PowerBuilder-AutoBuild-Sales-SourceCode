@@ -1,0 +1,30 @@
+﻿$PBExportHeader$str_emailsetting.srs
+global type str_emailsetting from structure
+	string		ls_server
+	string		ls_port
+	string		ls_userid
+	string		ls_password
+	string		ls_sendname
+	string		ls_sendemail
+	string		ls_fromname
+	string		ls_formemail
+	string		ls_subject
+	string		ls_body
+	string		ls_sendhtml
+	string		ls_logfile
+	string		ls_encrypt
+	string		ls_timeout
+	string		ls_enabletls
+	string		ls_serverprotocol
+	string		s_checkforservercertrevocation
+	string		ls_ignoreservercertificate
+	string		ls_outputlog
+	string		ls_useproxy
+	string		ls_proxyhost
+	string		ls_proxyuserid
+	string		ls_proxypassword
+	string		ls_proxytype
+	string		ls_proxyport
+	string		ls_authtype
+end type
+

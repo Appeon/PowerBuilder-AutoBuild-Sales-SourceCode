@@ -10,6 +10,7 @@ global type w_address from w_base
 integer width = 4151
 integer height = 2872
 string title = "Address"
+string icon = ".\image\Address.ico"
 boolean center = false
 uo_1 uo_1
 end type
@@ -43,7 +44,7 @@ end event
 event resize;call super::resize;
 uo_1.Height = newheight
 uo_1.Width = newwidth + 4
-uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 64 
+uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 20
 uo_1.tab_1.Width = newwidth  - uo_1.tab_1.x + 4
 uo_1.tab_1.tabpage_1.dw_browser.Height = newheight - uo_1.tab_1.tabpage_1.dw_browser.y -  64  - 64 
 uo_1.tab_1.tabpage_1.dw_browser.width = newwidth - uo_1.tab_1.tabpage_1.dw_browser.x  - 64 - 128

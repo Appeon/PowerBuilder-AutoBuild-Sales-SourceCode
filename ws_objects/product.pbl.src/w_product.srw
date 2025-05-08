@@ -10,6 +10,7 @@ global type w_product from w_base
 integer width = 4165
 integer height = 2824
 string title = "Product"
+string icon = ".\image\Product.ico"
 boolean center = false
 uo_1 uo_1
 end type
@@ -38,7 +39,7 @@ end event
 
 event resize;call super::resize;uo_1.Height = newheight
 uo_1.Width = newwidth + 4
-uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 64 
+uo_1.tab_1.Height =  newheight - uo_1.tab_1.y - 20 
 uo_1.tab_1.Width = newwidth  - uo_1.tab_1.x + 4
 //Browse
 uo_1.tab_1.tabpage_1.dw_browser.Height = (newheight - uo_1.tab_1.tabpage_1.dw_browser.y - uo_1.tab_1.tabpage_1.uo_search.Height - 64 * 3 - 48) / 2
