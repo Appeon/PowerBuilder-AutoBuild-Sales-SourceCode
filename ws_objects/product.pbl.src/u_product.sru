@@ -553,7 +553,7 @@ IF ls_dwname =  "dw_master" and ldws_sign = NewModified! Then
 	iuo_currentdw.SetItem(li_row, "productid", ll_pkid)
 	tab_1.tabpage_2.dw_detail.SetItem(li_prow, "productid", ll_pkid)	
 	iuo_currentdw.resetupdate()
-	tab_1.tabpage_2.dw_detail.resetupdate()
+//	tab_1.tabpage_2.dw_detail.resetupdate()
 END IF
 
 tab_1.tabpage_2.dw_detail.AcceptText()

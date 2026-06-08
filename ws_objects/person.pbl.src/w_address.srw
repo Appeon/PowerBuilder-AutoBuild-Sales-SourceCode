@@ -10,7 +10,7 @@ global type w_address from w_base
 integer width = 4151
 integer height = 2872
 string title = "Address"
-string icon = ".\image\Address.ico"
+string icon = ".\image\address_active.svg"
 boolean center = false
 uo_1 uo_1
 end type

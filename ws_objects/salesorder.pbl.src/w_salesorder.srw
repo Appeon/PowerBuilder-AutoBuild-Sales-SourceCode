@@ -10,7 +10,7 @@ global type w_salesorder from w_base
 integer width = 4165
 integer height = 2824
 string title = "Order"
-string icon = ".\image\Order.ico"
+string icon = ".\image\Order_active.svg"
 uo_1 uo_1
 end type
 global w_salesorder w_salesorder

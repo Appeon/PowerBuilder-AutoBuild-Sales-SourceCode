@@ -10,7 +10,7 @@ global type w_person from w_base
 integer width = 4165
 integer height = 2824
 string title = "Customer"
-string icon = ".\image\Customer.ico"
+string icon = ".\image\Customer_active.svg"
 boolean center = false
 uo_1 uo_1
 end type

@@ -141,7 +141,7 @@ end on
 event open;String ls_theme
 This.SetRedraw(False)
 is_file = "config.ini"
-ls_theme = ProfileString(is_file, "Theme", "Theme", "Flat Design Blue")
+ls_theme = ProfileString(is_file, "Theme", "Theme", "Flat Design Blue (HighDPI)")
 
 of_add_theme()
 ddlb_theme.Text = ls_theme

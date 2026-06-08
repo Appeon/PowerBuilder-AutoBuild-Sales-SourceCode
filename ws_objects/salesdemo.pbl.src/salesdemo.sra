@@ -32,7 +32,7 @@ long richtexteditx64type = 5
 long richtexteditversion = 3
 string richtexteditkey = ""
 string appicon = ".\image\CRM.ico"
-string appruntimeversion = "25.0.0.3683"
+string appruntimeversion = "25.1.0.6430"
 boolean manualsession = false
 boolean unsupportedapierror = true
 boolean ultrafast = false
@@ -42,7 +42,6 @@ long webview2distribution = 0
 boolean webview2checkx86 = false
 boolean webview2checkx64 = false
 string webview2url = "https://developer.microsoft.com/en-us/microsoft-edge/webview2/"
-integer highdpimode = 0
 end type
 global salesdemo salesdemo
 
@@ -70,7 +69,7 @@ If f_chk_webview_installed() = -1 Then
               Return
 End If
 
-ls_theme = ProfileString("config.ini", "Theme", "Theme", "Flat Design Blue")
+ls_theme = ProfileString("config.ini", "Theme", "Theme", "Flat Design Blue (HighDPI)")
 IF ls_theme <> "Do Not Use Themes" THEN
 	applytheme(GetCurrentDirectory( ) + "\Theme\" + ls_theme)
 END IF
@@ -78,7 +77,7 @@ END IF
 // Profile PB Demo DB V2025
 SQLCA.DBMS = "ODBC"
 SQLCA.AutoCommit = False
-SQLCA.DBParm = "ConnectString='DSN=PB Demo DB V2025;UID=dba;PWD=sql'"
+SQLCA.DBParm = "ConnectString='DSN=PB Demo DB V2025R2;UID=dba;PWD=sql'"
 
 
 Connect Using SQLCA;

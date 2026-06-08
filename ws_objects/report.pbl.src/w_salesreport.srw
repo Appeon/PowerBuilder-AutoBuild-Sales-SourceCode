@@ -10,7 +10,7 @@ global type w_salesreport from w_base
 integer width = 4507
 integer height = 2904
 string title = "Statistics"
-string icon = ".\image\Statistics.ico"
+string icon = ".\image\Statistics_active.svg"
 uo_1 uo_1
 end type
 global w_salesreport w_salesreport

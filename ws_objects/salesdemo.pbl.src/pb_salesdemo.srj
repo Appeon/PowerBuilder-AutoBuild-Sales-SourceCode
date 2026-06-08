@@ -1,6 +1,7 @@
 ﻿$PBExportHeader$pb_salesdemo.srj
 $PBExportComments$Generated Application Executable Project
-EXE:salesdemo.exe,,0,1,1,0,C:\Program Files (x86)\Appeon\Common\PowerBuilder\Runtime 25.0.0.3683
+EXE:pb_salesdemo.exe,,0,1,1,0,C:\Program Files (x86)\Appeon\Common\PowerBuilder\Runtime 25.1.0.6430
+EXT:0
 CMP:0,0,0,2,0,0,1
 COM:Appeon
 DES:Appeon Product File
@@ -10,7 +11,7 @@ PVS:1.0.0.1
 PVN:1,0,0,1
 FVS:1.0.0.1
 FVN:1,0,0,1
-MAN:0,asInvoker,0
+MAN:0,asInvoker,0,1,1,0,0,0,,0,0,,0,,,,SHA256,http://timestamp.digicert.com,
 PBD:salesdemo.pbl,,1
 PBD:common.pbl,,1
 PBD:person.pbl,,1

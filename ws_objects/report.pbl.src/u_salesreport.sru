@@ -714,7 +714,7 @@ Choose Case ai_index
 	Case 3
 		ldwc_graph.Modify("gr_1.GraphType='1'")  
 	Case 4
-		ldwc_graph.Modify("gr_1.GraphType='5'")  
+		ldwc_graph.Modify("gr_1.GraphType='2'")  
 	Case 5
 		ldwc_graph.Modify("gr_1.GraphType='12'")  
 End Choose

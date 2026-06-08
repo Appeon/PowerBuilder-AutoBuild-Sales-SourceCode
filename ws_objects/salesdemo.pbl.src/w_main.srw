@@ -295,9 +295,9 @@ string									ls_tag, ls_text, ls_picturename, ls_title
 integer								i, li_count, li_return, li_menucount, li_menuitem, li_rtn
 boolean								lbn_set_menu, lb_valid
 string 								ls_windowsText[]={"Address","Customer","Product","Order","Statistics","Elevate 2019"}		//Help
-string 								ls_pic[]={".\image\address.png",".\image\customer.png",".\image\product.png",".\image\order.png",".\image\statistics.png","HelpSmall!"}
-string 								ls_pic1[]={".\image\Blue\address_small.png",".\image\Blue\customer_small.png",".\image\Blue\product_small.png",".\image\Blue\order_small.png",".\image\Blue\statistics_small.png",".\image\Elevate.png"}
-string 								ls_pic2[]={".\image\Dark\address_small.png",".\image\Dark\customer_small.png",".\image\Dark\product_small.png",".\image\Dark\order_small.png",".\image\Dark\statistics_small.png",".\image\Elevate.png"}
+string 								ls_pic[]={".\image\address.svg",".\image\customer.svg",".\image\product.svg",".\image\order.svg",".\image\statistics.svg",".\image\help.svg"}
+string 								ls_pic1[]={".\image\Blue\address_small.svg",".\image\Blue\customer_small.svg",".\image\Blue\product_small.svg",".\image\Blue\order_small.svg",".\image\Blue\statistics_small.svg",".\image\Elevate.png"}
+string 								ls_pic2[]={".\image\Dark\address_small.svg",".\image\Dark\customer_small.svg",".\image\Dark\product_small.svg",".\image\Dark\order_small.svg",".\image\Dark\statistics_small.svg",".\image\Elevate.png"}
 
 if is_themename = "Blue" then 
 	ls_pic = ls_pic1
@@ -622,14 +622,14 @@ public subroutine of_set_largebutton_active (ribbonlargebuttonitem ar_largebutto
 
 ls_picturename = ar_largebuttonitem.picturename
 if abn_active then
-	if right(ls_picturename, len("_active.png")) <> "_active.png" then
-		ls_picturename = left(ls_picturename, len(ls_picturename) - len(".png")) + "_active.png"
+	if right(ls_picturename, len("_active.svg")) <> "_active.svg" then
+		ls_picturename = left(ls_picturename, len(ls_picturename) - len(".png")) + "_active.svg"
 		ar_largebuttonitem.picturename = ls_picturename
 		rbb_main.setlargebutton(ar_largebuttonitem.itemhandle, ar_largebuttonitem)	
 	end if 
 else
-	if right(ls_picturename, len("_active.png")) = "_active.png" then
-		ls_picturename = left(ls_picturename, len(ls_picturename) - len("_active.png")) + ".png"
+	if right(ls_picturename, len("_active.svg")) = "_active.svg" then
+		ls_picturename = left(ls_picturename, len(ls_picturename) - len("_active.svg")) + ".svg"
 		ar_largebuttonitem.picturename = ls_picturename
 		rbb_main.setlargebutton(ar_largebuttonitem.itemhandle, ar_largebuttonitem)	
 	end if
@@ -826,9 +826,9 @@ public function string of_refreshtheme ();String 								ls_themename
 
 ls_themename = GetTheme()
 Choose case ls_themename
-	case "Flat Design Blue"
+	case "Flat Design Blue (HighDPI)"
 		is_themename = "Blue"
-	case "Flat Design Dark"
+	case "Flat Design Dark (HighDPI)"
 		is_themename = "Dark"
 	case "Flat Design Grey"
 		is_themename = "Grey"

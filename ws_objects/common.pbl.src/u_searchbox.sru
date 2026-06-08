@@ -91,7 +91,7 @@ of_setplaceholder("Type here to search")
 String ls_themename
 ls_themename = GetTheme()
 
-IF ls_themename = "Flat Design Dark" THEN
+IF ls_themename = "Flat Design Dark (HighDPI)" THEN
 //	of_setcolor_border(4210752)  //RGB(64,64,64)
 //	of_setcolor_inner(3026478)  //RGB(46,46,46)
 //	this.backcolor = 3026478
@@ -340,7 +340,7 @@ end on
 
 event constructor;long ll_color
 
-IF GetTheme() = "Flat Design Dark" THEN
+IF GetTheme() = "Flat Design Dark (HighDPI)" THEN
 	of_regpicture_search( ".\Image\sle_search_dark.png")
 	of_regpicture_remove(".\Image\sle_close_dark.png")
 ELSE

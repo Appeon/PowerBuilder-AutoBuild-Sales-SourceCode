@@ -10,7 +10,7 @@ global type w_product from w_base
 integer width = 4165
 integer height = 2824
 string title = "Product"
-string icon = ".\image\Product.ico"
+string icon = ".\image\Product_active.svg"
 boolean center = false
 uo_1 uo_1
 end type
